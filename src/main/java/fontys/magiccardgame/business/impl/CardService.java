@@ -2,7 +2,6 @@ package fontys.magiccardgame.business.impl;
 
 import fontys.magiccardgame.business.CardServiceInterface;
 import fontys.magiccardgame.models.Card;
-import fontys.magiccardgame.persistence.CardsRepo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
