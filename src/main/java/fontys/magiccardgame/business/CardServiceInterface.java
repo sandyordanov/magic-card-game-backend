@@ -1,15 +1,13 @@
-package fontys.magiccardgame.persistence;
+package fontys.magiccardgame.business;
 
 import fontys.magiccardgame.models.Card;
 
 import java.util.List;
 
-public interface CardsRepo {
-
+public interface CardServiceInterface {
     List<Card> getAllCards();
     Card getById(long id);
     Card save (Card card);
     void deleteById(long cardId);
-    boolean exists(long cardId);
-
+    boolean updateCard(Card card);
 }
