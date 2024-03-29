@@ -1,6 +1,6 @@
 package fontys.magiccardgame.business.impl;
 
-import fontys.magiccardgame.business.CardManager;
+import fontys.magiccardgame.business.CardServiceInterface;
 import fontys.magiccardgame.models.Card;
 import fontys.magiccardgame.persistence.CardsRepo;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,8 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class CardManagerImpl implements CardManager {
+public class CardService implements CardServiceInterface {
     private CardsRepo cardsRepo;
-
 
 
     @Override
@@ -26,8 +25,8 @@ public class CardManagerImpl implements CardManager {
     }
 
     @Override
-    public void save(Card card) {
-        cardsRepo.save(card);
+    public Card save(Card card) {
+       return cardsRepo.save(card);
     }
 
     @Override

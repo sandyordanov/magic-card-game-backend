@@ -1,6 +1,6 @@
 package fontys.magiccardgame.controller;
 
-import fontys.magiccardgame.business.CardManager;
+import fontys.magiccardgame.business.impl.CardService;
 import fontys.magiccardgame.models.Card;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+
 @RequestMapping("/cards")
 @AllArgsConstructor
 public class CardsController {
-    private final CardManager cardManager;
+    private final CardService cardManager;
 
     @GetMapping
     public ResponseEntity<List<Card>> getAllCards() {
@@ -30,9 +31,9 @@ public class CardsController {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> createCard(@RequestBody Card card) {
-        cardManager.save(card);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public Card createCard(@RequestBody Card card) {
+      var result = cardManager.save(card);
+        return result;
     }
 
     @PutMapping("{id}")
@@ -44,7 +45,6 @@ public class CardsController {
         }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
-
 
     @DeleteMapping("{cardId}")
     public ResponseEntity<Void> deleteStudent(@PathVariable long cardId) {

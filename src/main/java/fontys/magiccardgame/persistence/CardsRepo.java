@@ -8,7 +8,7 @@ public interface CardsRepo {
 
     List<Card> getAllCards();
     Card getById(long id);
-    void save (Card card);
+    Card save (Card card);
     void deleteById(long cardId);
     boolean exists(long cardId);
 

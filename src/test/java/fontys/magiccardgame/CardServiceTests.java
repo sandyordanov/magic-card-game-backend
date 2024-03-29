@@ -1,6 +1,6 @@
 package fontys.magiccardgame;
 
-import fontys.magiccardgame.business.impl.CardManagerImpl;
+import fontys.magiccardgame.business.impl.CardService;
 import fontys.magiccardgame.models.Card;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +12,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringJUnitConfig
 @SpringBootTest
-public class CardManagerTests {
+public class CardServiceTests {
     @Autowired
-    CardManagerImpl cardManager;
+    CardService cardService;
 
     @Test
     void updateCard_ShouldReturnFalse_WhenInvalidCardId() {
         Card invalidCard = new Card(10, "name", 2, 3);
 
-        var result = cardManager.updateCard(invalidCard);
+        var result = cardService.updateCard(invalidCard);
         assertFalse(result);
     }
 
@@ -28,7 +28,7 @@ public class CardManagerTests {
     void updateCard_ShouldReturnTrue_WhenCardExists() {
         Card invalidCard = new Card(1, "name", 2, 3);
 
-        var result = cardManager.updateCard(invalidCard);
+        var result = cardService.updateCard(invalidCard);
         assertTrue(result);
     }
 }
