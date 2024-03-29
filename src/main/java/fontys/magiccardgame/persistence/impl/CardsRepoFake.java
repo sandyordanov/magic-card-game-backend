@@ -35,9 +35,10 @@ public class CardsRepoFake implements CardsRepo {
     }
 
     @Override
-    public void save(Card card) {
+    public Card save(Card card) {
         card.setId(cards.size() + 1);
         cards.add(card);
+        return card;
     }
 
     @Override
