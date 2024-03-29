@@ -1,6 +1,7 @@
 package fontys.magiccardgame.controller;
 
 import fontys.magiccardgame.business.impl.CardService;
+
 import fontys.magiccardgame.models.Card;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class CardsController {
     public Card createCard(@RequestBody Card card) {
       var result = cardManager.save(card);
         return result;
+
     }
 
     @PutMapping("{id}")
