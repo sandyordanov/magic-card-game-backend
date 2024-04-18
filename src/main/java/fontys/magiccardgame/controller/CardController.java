@@ -1,18 +1,25 @@
 package fontys.magiccardgame.controller;
+<<<<<<< HEAD:src/main/java/fontys/magiccardgame/controller/CardsController.java
 import fontys.magiccardgame.business.impl.CardService;
 import fontys.magiccardgame.models.Card;
+=======
+
+import fontys.magiccardgame.business.CardService;
+import fontys.magiccardgame.persistence.entity.Card;
+>>>>>>> 78dc61c (jacoco,sonaqube and classes):src/main/java/fontys/magiccardgame/controller/CardController.java
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 
 @RequestMapping("/cards")
 @AllArgsConstructor
-public class CardsController {
+public class CardController {
     private final CardService cardManager;
 
     @GetMapping
@@ -21,7 +28,7 @@ public class CardsController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Card> getCard(@PathVariable(value = "id") final long id) {
+    public ResponseEntity<Optional<Card>> getCard(@PathVariable(value = "id") final int id) {
         var result = cardManager.getById(id);
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -46,7 +53,7 @@ public class CardsController {
     }
 
     @DeleteMapping("{cardId}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable long cardId) {
+    public ResponseEntity<Void> deleteStudent(@PathVariable int cardId) {
         cardManager.deleteById(cardId);
         return ResponseEntity.noContent().build();
     }
