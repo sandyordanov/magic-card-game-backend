@@ -1,34 +1,89 @@
 package fontys.magiccardgame;
 
-import fontys.magiccardgame.business.impl.CardService;
-import fontys.magiccardgame.models.Card;
+import fontys.magiccardgame.business.CardService;
+import fontys.magiccardgame.persistence.CardRepository;
+import fontys.magiccardgame.persistence.entity.Card;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig
 @SpringBootTest
 public class CardServiceTests {
-    @Autowired
-    CardService cardService;
+    @InjectMocks
+    private CardService cardService;
 
-    @Test
-    void updateCard_ShouldReturnFalse_WhenInvalidCardId() {
-        Card invalidCard = new Card(10, "name", 2, 3);
+    @Mock
+    private CardRepository cardsRepo;
 
-        var result = cardService.updateCard(invalidCard);
-        assertFalse(result);
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    void updateCard_ShouldReturnTrue_WhenCardExists() {
-        Card invalidCard = new Card(1, "name", 2, 3);
+    public void testGetAllCards() {
+        Card card1 = new Card();
+        Card card2 = new Card();
+        when(cardsRepo.findAll()).thenReturn(Arrays.asList(card1, card2));
 
-        var result = cardService.updateCard(invalidCard);
+        List<Card> result = cardService.getAllCards();
+
+        assertEquals(2, result.size());
+        verify(cardsRepo, times(1)).findAll();
+    }
+
+    @Test
+    public void testGetById() {
+        Card card = new Card();
+        when(cardsRepo.findById(1)).thenReturn(Optional.of(card));
+
+        Optional<Card> result = cardService.getById(1);
+
+        assertTrue(result.isPresent());
+        verify(cardsRepo, times(1)).findById(1);
+    }
+
+    @Test
+    public void testSave() {
+        Card card = new Card();
+        when(cardsRepo.save(card)).thenReturn(card);
+
+        Card result = cardService.save(card);
+
+        assertEquals(card, result);
+        verify(cardsRepo, times(1)).save(card);
+    }
+
+    @Test
+    public void testDeleteById() {
+        cardService.deleteById(1);
+
+        verify(cardsRepo, times(1)).deleteById(1);
+    }
+
+    @Test
+    public void testUpdateCard() {
+        Card card = new Card();
+        card.setId(1);
+        when(cardsRepo.existsById(card.getId())).thenReturn(true);
+        when(cardsRepo.findById(card.getId())).thenReturn(Optional.of(card));
+
+        boolean result = cardService.updateCard(card);
+
         assertTrue(result);
+        verify(cardsRepo, times(1)).existsById(card.getId());
+        verify(cardsRepo, times(1)).findById(card.getId());
     }
 }
