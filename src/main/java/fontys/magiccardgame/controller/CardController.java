@@ -1,5 +1,4 @@
 package fontys.magiccardgame.controller;
-
 import fontys.magiccardgame.business.CardService;
 import fontys.magiccardgame.persistence.entity.Card;
 import lombok.AllArgsConstructor;
@@ -35,6 +34,7 @@ public class CardController {
     public Card createCard(@RequestBody Card card) {
       var result = cardManager.save(card);
         return result;
+
     }
 
     @PutMapping("{id}")
