@@ -1,5 +1,6 @@
 package fontys.magiccardgame.advice;
 
+import fontys.magiccardgame.business.exceptions.DeckSizeLimitException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,5 +26,14 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+
+    @ExceptionHandler(DeckSizeLimitException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public Map<String, String> handleDeckSizeLimitException(DeckSizeLimitException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+        return response;
     }
 }

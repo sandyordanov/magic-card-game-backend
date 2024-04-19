@@ -36,16 +36,11 @@ public class CardService {
 
 
     public boolean updateCard(Card newCard) {
-        Optional<Card> card;
-        if (!cardsRepo.existsById(newCard.getId())) {
-            return false;
-        }
 
-        card = cardsRepo.findById(newCard.getId());
-
-//        card.setName(newCard.getName());
-//        toBeUpdated.setAttackPoints(newCard.getAttackPoints());
-//        toBeUpdated.setHealthPoints(newCard.getHealthPoints());
+        Card card = cardsRepo.findById(newCard.getId()).orElseThrow(() -> new IllegalArgumentException("Cannot find card with the specified id."));
+        card.setName(newCard.getName());
+        card.setAttackPoints(newCard.getAttackPoints());
+        card.setHealthPoints(newCard.getHealthPoints());
         return true;
     }
 }
