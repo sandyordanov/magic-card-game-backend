@@ -5,5 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DeckRepository extends JpaRepository<Card,Integer> {
 
-    int getCountById(Integer id);
 }
