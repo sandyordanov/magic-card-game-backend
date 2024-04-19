@@ -15,8 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig
@@ -75,16 +75,43 @@ public class CardServiceTests {
     }
 
     @Test
-    public void testUpdateCard() {
-        Card card = new Card();
-        card.setId(1);
-        when(cardsRepo.existsById(card.getId())).thenReturn(true);
-        when(cardsRepo.findById(card.getId())).thenReturn(Optional.of(card));
+    public void testUpdateCard_ValidCard() {
+        // Arrange
+        Card existingCard = new Card();
+        existingCard.setId(1);
+        existingCard.setName("Old Card");
+        existingCard.setAttackPoints(10);
+        existingCard.setHealthPoints(20);
 
-        boolean result = cardService.updateCard(card);
+        Card newCard = new Card();
+        newCard.setId(1);
+        newCard.setName("Updated Card");
+        newCard.setAttackPoints(15);
+        newCard.setHealthPoints(25);
 
-        assertTrue(result);
-        verify(cardsRepo, times(1)).existsById(card.getId());
-        verify(cardsRepo, times(1)).findById(card.getId());
+        when(cardsRepo.findById(1)).thenReturn(Optional.of(existingCard));
+
+        // Act
+        boolean result = cardService.updateCard(newCard);
+
+        // Assert
+        assertThat(result).isTrue();
+        assertThat(existingCard.getName()).isEqualTo("Updated Card");
+        assertThat(existingCard.getAttackPoints()).isEqualTo(15);
+        assertThat(existingCard.getHealthPoints()).isEqualTo(25);
+    }
+
+    @Test
+    public void testUpdateCard_CardNotFound() {
+        // Arrange
+        Card newCard = new Card();
+        newCard.setId(2); // Non-existent card ID
+
+        when(cardsRepo.findById(2)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            cardService.updateCard(newCard);
+        });
     }
 }
