@@ -5,17 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import fontys.magiccardgame.business.DeckService;
-import fontys.magiccardgame.business.exceptions.DeckSizeLimitException;
 import fontys.magiccardgame.persistence.CardRepository;
-import fontys.magiccardgame.persistence.DeckRepository;
 import fontys.magiccardgame.persistence.PlayerRepo;
-import fontys.magiccardgame.persistence.entity.Card;
+import fontys.magiccardgame.persistence.entity.CardEntity;
 import fontys.magiccardgame.persistence.entity.Deck;
 import fontys.magiccardgame.persistence.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +34,7 @@ public class DeckServiceTests {
         Player player = new Player();
         player.setId(1);
         player.setDeck(new Deck());
-        Card card = new Card();
+        CardEntity card = new CardEntity();
         card.setId(42);
 
         when(playerRepo.findById(1)).thenReturn(Optional.of(player));

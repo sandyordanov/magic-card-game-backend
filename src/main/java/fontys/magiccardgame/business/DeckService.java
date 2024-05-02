@@ -4,16 +4,11 @@ import fontys.magiccardgame.business.exceptions.DeckSizeLimitException;
 import fontys.magiccardgame.persistence.CardRepository;
 import fontys.magiccardgame.persistence.DeckRepository;
 import fontys.magiccardgame.persistence.PlayerRepo;
-import fontys.magiccardgame.persistence.entity.Card;
+import fontys.magiccardgame.persistence.entity.CardEntity;
 import fontys.magiccardgame.persistence.entity.Player;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.tomcat.util.bcel.Const;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -31,7 +26,7 @@ public class DeckService {
     @SneakyThrows
     public void addCard(int cardId, int playerId) {
         Player player = playerRepo.findById(playerId).orElseThrow(() -> new IllegalArgumentException("Cannot find player with the specified id."));
-        Card card = cardRepo.findById(cardId).orElseThrow(() -> new IllegalArgumentException("Card not found"));
+        CardEntity card = cardRepo.findById(cardId).orElseThrow(() -> new IllegalArgumentException("Card not found"));
 
         if (!CheckDeckSize(player)) {
             throw new DeckSizeLimitException(DECK_SIZE);
@@ -46,7 +41,7 @@ public class DeckService {
     }
 
     private boolean CheckDeckSize(Player player) {
-        int cardsInDeck = player.getDeck().getDeckSize();
+        int cardsInDeck = player.getDeck().getCards().size();
         return cardsInDeck <= DECK_SIZE;
     }
 

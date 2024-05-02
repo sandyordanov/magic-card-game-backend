@@ -23,7 +23,7 @@ public class CardController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Optional<Card>> getCard(@PathVariable(value = "id") final int id) {
+    public ResponseEntity<Card> getCard(@PathVariable(value = "id") final int id) {
         var result = cardManager.getById(id);
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -32,17 +32,17 @@ public class CardController {
     }
 
     @PostMapping()
-    public Card createCard(@RequestBody Card card) {
+    public CardEntity createCard(@RequestBody CardEntity card) {
       var result = cardManager.save(card);
         return result;
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> updateCard(@PathVariable("id") int id, @RequestBody Card updatedCard) {
+    public ResponseEntity<Card> updateCard(@PathVariable("id") int id, @RequestBody Card updatedCard) {
         updatedCard.setId(id);
-        boolean result = cardManager.updateCard(updatedCard);
-        if (result) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        Card result = cardManager.updateCard(updatedCard);
+        if (result!=null) {
+            return ResponseEntity.ok(result);
         }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }

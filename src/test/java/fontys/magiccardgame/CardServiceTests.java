@@ -1,8 +1,10 @@
 package fontys.magiccardgame;
 
 import fontys.magiccardgame.business.CardService;
+import fontys.magiccardgame.business.dto.GetAllCardsResponse;
 import fontys.magiccardgame.persistence.CardRepository;
-import fontys.magiccardgame.persistence.entity.Card;
+import fontys.magiccardgame.domain.Card;
+import fontys.magiccardgame.persistence.entity.CardEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -34,34 +36,34 @@ public class CardServiceTests {
     }
 
     @Test
-    public void testGetAllCards() {
-        Card card1 = new Card();
-        Card card2 = new Card();
+    public void getAllCards_shouldReturn_allCardsInTheCollection() {
+        CardEntity card1 = new CardEntity();
+        CardEntity card2 = new CardEntity();
         when(cardsRepo.findAll()).thenReturn(Arrays.asList(card1, card2));
 
-        List<Card> result = cardService.getAllCards();
+        GetAllCardsResponse result = cardService.getAllCards();
 
-        assertEquals(2, result.size());
+        assertEquals(2, result.getCards().size());
         verify(cardsRepo, times(1)).findAll();
     }
 
     @Test
     public void testGetById() {
-        Card card = new Card();
+        CardEntity card = new CardEntity();
         when(cardsRepo.findById(1)).thenReturn(Optional.of(card));
 
-        Optional<Card> result = cardService.getById(1);
+        Card result = cardService.getById(1);
 
-        assertTrue(result.isPresent());
+        assertEquals(result.getId(),card.getId());
         verify(cardsRepo, times(1)).findById(1);
     }
 
     @Test
     public void testSave() {
-        Card card = new Card();
+        CardEntity card = new CardEntity();
         when(cardsRepo.save(card)).thenReturn(card);
 
-        Card result = cardService.save(card);
+        CardEntity result = cardService.save(card);
 
         assertEquals(card, result);
         verify(cardsRepo, times(1)).save(card);
@@ -77,7 +79,7 @@ public class CardServiceTests {
     @Test
     public void testUpdateCard_ValidCard() {
         // Arrange
-        Card existingCard = new Card();
+        CardEntity existingCard = new CardEntity();
         existingCard.setId(1);
         existingCard.setName("Old Card");
         existingCard.setAttackPoints(10);
@@ -86,19 +88,19 @@ public class CardServiceTests {
         Card newCard = new Card();
         newCard.setId(1);
         newCard.setName("Updated Card");
-        newCard.setAttackPoints(15);
-        newCard.setHealthPoints(25);
+        newCard.setAp(15);
+        newCard.setHp(25);
 
         when(cardsRepo.findById(1)).thenReturn(Optional.of(existingCard));
 
         // Act
-        boolean result = cardService.updateCard(newCard);
+        Card result = cardService.updateCard(newCard);
 
         // Assert
-        assertThat(result).isTrue();
-        assertThat(existingCard.getName()).isEqualTo("Updated Card");
-        assertThat(existingCard.getAttackPoints()).isEqualTo(15);
-        assertThat(existingCard.getHealthPoints()).isEqualTo(25);
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo("Updated Card");
+        assertThat(result.getAp()).isEqualTo(15);
+        assertThat(result.getHp()).isEqualTo(25);
     }
 
     @Test

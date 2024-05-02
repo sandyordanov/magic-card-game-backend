@@ -1,7 +1,6 @@
 package fontys.magiccardgame.business;
 
 import fontys.magiccardgame.business.dto.GetAllCardsResponse;
-import fontys.magiccardgame.business.exceptions.CardNotFoundException;
 import fontys.magiccardgame.domain.Card;
 import fontys.magiccardgame.persistence.CardRepository;
 import fontys.magiccardgame.persistence.entity.CardEntity;
@@ -9,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -29,7 +27,7 @@ public class CardService {
 
 
     public Card getById(int id) {
-        return CardConverter.convert(cardsRepo.findById(id).orElse(null)) ;
+        return CardConverter.convert(cardsRepo.findById(id).orElse(null));
     }
 
 
@@ -43,12 +41,12 @@ public class CardService {
     }
 
 
-    public boolean updateCard(CardEntity newCard) {
+    public Card updateCard(Card newCard) {
 
         CardEntity card = cardsRepo.findById(newCard.getId()).orElseThrow(() -> new IllegalArgumentException("Cannot find card with the specified id."));
         card.setName(newCard.getName());
-        card.setAttackPoints(newCard.getAttackPoints());
-        card.setHealthPoints(newCard.getHealthPoints());
-        return true;
+        card.setAttackPoints(newCard.getAp());
+        card.setHealthPoints(newCard.getHp());
+        return CardConverter.convert(card);
     }
 }
