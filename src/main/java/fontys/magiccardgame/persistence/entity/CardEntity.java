@@ -13,7 +13,7 @@ import java.util.List;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class Card {
+public class CardEntity {
 
     @Id
     @Column(name = "id")
@@ -32,6 +32,6 @@ public class Card {
     @Column(name = "healthPoints")
     private int healthPoints;
 
-    @ManyToMany(mappedBy = "ownedCards")
+    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "ownedCards")
     private List<Player> owners;
 }

@@ -34,7 +34,7 @@ public class Player {
     @JoinTable(name = "player_owned_cards",
             joinColumns = @JoinColumn(name = "player_id"),
             inverseJoinColumns = @JoinColumn(name = "card_id"))
-    private List<Card> ownedCards;
+    private List<CardEntity> ownedCards;
 
     @OneToOne
     private Deck deck;

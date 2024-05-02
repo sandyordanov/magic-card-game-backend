@@ -1,18 +1,13 @@
 package fontys.magiccardgame.controller;
-<<<<<<< HEAD:src/main/java/fontys/magiccardgame/controller/CardsController.java
-import fontys.magiccardgame.business.impl.CardService;
-import fontys.magiccardgame.models.Card;
-=======
-
 import fontys.magiccardgame.business.CardService;
-import fontys.magiccardgame.persistence.entity.Card;
->>>>>>> 78dc61c (jacoco,sonaqube and classes):src/main/java/fontys/magiccardgame/controller/CardController.java
+import fontys.magiccardgame.business.dto.GetAllCardsResponse;
+import fontys.magiccardgame.domain.Card;
+import fontys.magiccardgame.persistence.entity.CardEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,7 +18,7 @@ public class CardController {
     private final CardService cardManager;
 
     @GetMapping
-    public ResponseEntity<List<Card>> getAllCards() {
+    public ResponseEntity<GetAllCardsResponse> getAllCards() {
         return ResponseEntity.ok(cardManager.getAllCards());
     }
 
