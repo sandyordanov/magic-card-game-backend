@@ -20,16 +20,16 @@ public class CardEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull(message = "Name is manditory.")
+    @NotNull(message = "Name is mandatory.")
     @Column(name = "name")
     private String name;
 
-    @NotNull(message = "Attack points are manditory.")
-    @Column(name = "attackPoints")
+    @NotNull(message = "Attack points are mandatory.")
+    @Column(name = "attack_Points")
     private int attackPoints;
 
-    @NotNull(message = "Health points are manditory.")
-    @Column(name = "healthPoints")
+    @NotNull(message = "Health points are mandatory.")
+    @Column(name = "health_Points")
     private int healthPoints;
 
     @ManyToMany(fetch = FetchType.LAZY,mappedBy = "ownedCards")

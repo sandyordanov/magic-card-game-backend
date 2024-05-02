@@ -24,11 +24,7 @@ public class Deck {
     private Player player;
 
     @ManyToMany
-    private List<Card> cards;
-
-    public int getDeckSize(){
-        return cards.size();
-    }
+    private List<CardEntity> cards;
 
 
 }
