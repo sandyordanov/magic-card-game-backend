@@ -47,6 +47,7 @@ public class CardService {
         card.setName(newCard.getName());
         card.setAttackPoints(newCard.getAp());
         card.setHealthPoints(newCard.getHp());
+        cardsRepo.save(card);
         return CardConverter.convert(card);
     }
 }
