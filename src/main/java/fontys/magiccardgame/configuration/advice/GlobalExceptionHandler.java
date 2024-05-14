@@ -1,6 +1,7 @@
-package fontys.magiccardgame.advice;
+package fontys.magiccardgame.configuration.advice;
 
-import fontys.magiccardgame.business.exceptions.DeckSizeLimitException;
+import fontys.magiccardgame.business.exception.DeckSizeLimitException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -36,4 +38,6 @@ public class GlobalExceptionHandler {
         response.put("error", ex.getMessage());
         return response;
     }
+
+
 }

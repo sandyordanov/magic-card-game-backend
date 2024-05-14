@@ -9,9 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 public class Card {
 
-    private int id;
+    private Long id;
     private String name;
-    private int hp;
-    private int ap;
+    private int healthPoints;
+    private int attackPoints;
 
 }

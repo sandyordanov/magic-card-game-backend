@@ -13,15 +13,15 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Deck {
+public class DeckEntity {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    private Player player;
+    @OneToOne(mappedBy = "deck")
+    private PlayerEntity player;
 
     @ManyToMany
     private List<CardEntity> cards;

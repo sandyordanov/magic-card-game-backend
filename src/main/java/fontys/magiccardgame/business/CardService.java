@@ -26,7 +26,7 @@ public class CardService {
     }
 
 
-    public Card getById(int id) {
+    public Card getById(Long id) {
         return CardConverter.convert(cardsRepo.findById(id).orElse(null));
     }
 
@@ -36,7 +36,7 @@ public class CardService {
     }
 
 
-    public void deleteById(int cardId) {
+    public void deleteById(Long cardId) {
         cardsRepo.deleteById(cardId);
     }
 
@@ -45,8 +45,8 @@ public class CardService {
 
         CardEntity card = cardsRepo.findById(newCard.getId()).orElseThrow(() -> new IllegalArgumentException("Cannot find card with the specified id."));
         card.setName(newCard.getName());
-        card.setAttackPoints(newCard.getAp());
-        card.setHealthPoints(newCard.getHp());
+        card.setAttackPoints(newCard.getAttackPoints());
+        card.setHealthPoints(newCard.getHealthPoints());
         cardsRepo.save(card);
         return CardConverter.convert(card);
     }

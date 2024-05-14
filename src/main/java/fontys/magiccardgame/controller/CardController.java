@@ -1,16 +1,17 @@
 package fontys.magiccardgame.controller;
 
+import fontys.magiccardgame.business.CardConverter;
 import fontys.magiccardgame.business.CardService;
 import fontys.magiccardgame.business.dto.GetAllCardsResponse;
 import fontys.magiccardgame.domain.Card;
 import fontys.magiccardgame.persistence.entity.CardEntity;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-
 @RequestMapping("/cards")
 @AllArgsConstructor
 public class CardController {
@@ -22,7 +23,7 @@ public class CardController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Card> getCard(@PathVariable(value = "id") final int id) {
+    public ResponseEntity<Card> getCard(@PathVariable(value = "id") final Long id) {
         var result = cardService.getById(id);
         if (result == null) {
             return ResponseEntity.notFound().build();
@@ -31,12 +32,14 @@ public class CardController {
     }
 
     @PostMapping()
-    public CardEntity createCard(@RequestBody CardEntity card) {
-        return cardService.save(card);
+    @RolesAllowed({"ADMIN"})
+    public Card createCard(@RequestBody CardEntity card) {
+        return CardConverter.convert(cardService.save(card)) ;
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Card> updateCard(@PathVariable("id") int id, @RequestBody Card updatedCard) {
+    @RolesAllowed({"ADMIN"})
+    public ResponseEntity<Card> updateCard(@PathVariable("id") Long id, @RequestBody Card updatedCard) {
         updatedCard.setId(id);
         Card result = cardService.updateCard(updatedCard);
         if (result!=null) {
@@ -46,7 +49,8 @@ public class CardController {
     }
 
     @DeleteMapping("{cardId}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable int cardId) {
+    @RolesAllowed({"ADMIN"})
+    public ResponseEntity<Void> deleteCard(@PathVariable Long cardId) {
         cardService.deleteById(cardId);
         return ResponseEntity.noContent().build();
     }

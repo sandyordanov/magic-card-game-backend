@@ -1,6 +1,6 @@
-package fontys.magiccardgame.business.exceptions;
+package fontys.magiccardgame.business.exception;
 
-public class DeckSizeLimitException extends Exception {
+public class DeckSizeLimitException extends RuntimeException {
 
     private String message;
 

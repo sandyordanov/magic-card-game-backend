@@ -18,7 +18,7 @@ public class CardEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @NotNull(message = "Name is mandatory.")
     @Column(name = "name")
@@ -33,5 +33,5 @@ public class CardEntity {
     private int healthPoints;
 
     @ManyToMany(fetch = FetchType.LAZY,mappedBy = "ownedCards")
-    private List<Player> owners;
+    private List<PlayerEntity> owners;
 }

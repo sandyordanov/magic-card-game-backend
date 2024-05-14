@@ -1,19 +1,18 @@
 package fontys.magiccardgame;
 
+import fontys.magiccardgame.business.DeckService;
+import fontys.magiccardgame.persistence.CardRepository;
+import fontys.magiccardgame.persistence.PlayerRepository;
+import fontys.magiccardgame.persistence.entity.CardEntity;
+import fontys.magiccardgame.persistence.entity.DeckEntity;
+import fontys.magiccardgame.persistence.entity.PlayerEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import fontys.magiccardgame.business.DeckService;
-import fontys.magiccardgame.persistence.CardRepository;
-import fontys.magiccardgame.persistence.PlayerRepo;
-import fontys.magiccardgame.persistence.entity.CardEntity;
-import fontys.magiccardgame.persistence.entity.Deck;
-import fontys.magiccardgame.persistence.entity.Player;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -24,23 +23,23 @@ public class DeckServiceTests {
     private DeckService deckService;
 
     @MockBean
-    private PlayerRepo playerRepo;
+    private PlayerRepository playerRepository;
 
     @MockBean
     private CardRepository cardRepo;
     @Test
     public void testAddCard_CardNotOwnedByPlayer() {
         // Arrange
-        Player player = new Player();
-        player.setId(1);
-        player.setDeck(new Deck());
+        PlayerEntity player = new PlayerEntity();
+        player.setId(1L);
+        player.setDeck(new DeckEntity());
         CardEntity card = new CardEntity();
-        card.setId(42);
+        card.setId(42L);
 
-        when(playerRepo.findById(1)).thenReturn(Optional.of(player));
-        when(cardRepo.findById(42)).thenReturn(Optional.of(card));
+        when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
+        when(cardRepo.findById(42L)).thenReturn(Optional.of(card));
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> deckService.addCard(43, 1));
+        assertThrows(IllegalArgumentException.class, () -> deckService.addCard(43L, 1L));
     }
 }
