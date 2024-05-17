@@ -1,9 +1,9 @@
 package fontys.magiccardgame.persistence.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 
@@ -16,26 +16,26 @@ import java.util.List;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class Player {
+public class PlayerEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name")
     @NotBlank(message = "Name is mandatory")
     private String name;
 
-    @Column(name = "email")
-    @Email
-    @NotBlank(message = "Email is mandatory")
-    private String email;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "player_owned_cards",
             joinColumns = @JoinColumn(name = "player_id"),
             inverseJoinColumns = @JoinColumn(name = "card_id"))
-    private List<Card> ownedCards;
+    private List<CardEntity> ownedCards;
 
     @OneToOne
-    private Deck deck;
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private DeckEntity deck;
 }

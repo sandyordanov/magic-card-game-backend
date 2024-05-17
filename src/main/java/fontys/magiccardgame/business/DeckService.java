@@ -1,19 +1,15 @@
 package fontys.magiccardgame.business;
 
-import fontys.magiccardgame.business.exceptions.DeckSizeLimitException;
+import fontys.magiccardgame.business.dto.AddCardToDeckRequest;
+import fontys.magiccardgame.business.exception.CardNotFoundException;
+import fontys.magiccardgame.business.exception.DeckSizeLimitException;
 import fontys.magiccardgame.persistence.CardRepository;
 import fontys.magiccardgame.persistence.DeckRepository;
-import fontys.magiccardgame.persistence.PlayerRepo;
-import fontys.magiccardgame.persistence.entity.Card;
-import fontys.magiccardgame.persistence.entity.Player;
-import jakarta.transaction.Transactional;
+import fontys.magiccardgame.persistence.PlayerRepository;
+import fontys.magiccardgame.persistence.entity.CardEntity;
+import fontys.magiccardgame.persistence.entity.PlayerEntity;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.tomcat.util.bcel.Const;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -23,32 +19,33 @@ public class DeckService {
 
     private CardRepository cardRepo;
 
-    private PlayerRepo playerRepo;
+    private PlayerRepository playerRepository;
 
     static final int DECK_SIZE = 3;
 
+    public void addCard(AddCardToDeckRequest request) {
+        PlayerEntity player = playerRepository.findById(request.getPlayerId()).orElseThrow(
+                () -> new IllegalArgumentException("Cannot find player with the specified id."));
+        CardEntity card = cardRepo.findById(request.getCardId()).orElseThrow(() -> new CardNotFoundException(request.getCardId()));
 
-    @SneakyThrows
-    public void addCard(int cardId, int playerId) {
-        Player player = playerRepo.findById(playerId).orElseThrow(() -> new IllegalArgumentException("Cannot find player with the specified id."));
-        Card card = cardRepo.findById(cardId).orElseThrow(() -> new IllegalArgumentException("Card not found"));
-
-        if (!CheckDeckSize(player)) {
+        if (!checkDeckSize(player)) {
             throw new DeckSizeLimitException(DECK_SIZE);
         }
 
-        if (player.getOwnedCards().contains(card)) {
-            player.getDeck().getCards().add(card);
-            playerRepo.save(player);
+        if (player.getOwnedCards().stream().noneMatch(ownedCard -> ownedCard.getId().equals(card.getId()))) {
+            throw new IllegalArgumentException("You do not have the given card in player's card collection");
         }
-        throw new IllegalArgumentException("You do not have the given card in player's card collection");
-
+        player.getDeck().getCards().add(card);
+        playerRepository.save(player);
     }
 
-    private boolean CheckDeckSize(Player player) {
-        int cardsInDeck = player.getDeck().getDeckSize();
+    private boolean checkDeckSize(PlayerEntity player) {
+        int cardsInDeck = player.getDeck().getCards().size();
         return cardsInDeck <= DECK_SIZE;
     }
 
+    public int getDeckSize(){
+        return DECK_SIZE;
+    }
 }
 

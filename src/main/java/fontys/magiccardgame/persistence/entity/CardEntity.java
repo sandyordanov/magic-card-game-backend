@@ -13,25 +13,25 @@ import java.util.List;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class Card {
+public class CardEntity {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    @NotNull(message = "Name is manditory.")
+    @NotNull(message = "Name is mandatory.")
     @Column(name = "name")
     private String name;
 
-    @NotNull(message = "Attack points are manditory.")
-    @Column(name = "attackPoints")
+    @NotNull(message = "Attack points are mandatory.")
+    @Column(name = "attack_Points")
     private int attackPoints;
 
-    @NotNull(message = "Health points are manditory.")
-    @Column(name = "healthPoints")
+    @NotNull(message = "Health points are mandatory.")
+    @Column(name = "health_Points")
     private int healthPoints;
 
-    @ManyToMany(mappedBy = "ownedCards")
-    private List<Player> owners;
+    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "ownedCards")
+    private List<PlayerEntity> owners;
 }
