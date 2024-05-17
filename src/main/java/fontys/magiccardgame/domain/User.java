@@ -1,13 +1,12 @@
 package fontys.magiccardgame.domain;
 
 import fontys.magiccardgame.persistence.entity.RoleEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {

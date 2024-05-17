@@ -33,8 +33,8 @@ public class CardController {
 
     @PostMapping()
     @RolesAllowed({"ADMIN"})
-    public Card createCard(@RequestBody CardEntity card) {
-        return CardConverter.convert(cardService.save(card)) ;
+    public Card createCard(@RequestBody Card card) {
+        return cardService.save(card);
     }
 
     @PutMapping("{id}")
@@ -42,10 +42,7 @@ public class CardController {
     public ResponseEntity<Card> updateCard(@PathVariable("id") Long id, @RequestBody Card updatedCard) {
         updatedCard.setId(id);
         Card result = cardService.updateCard(updatedCard);
-        if (result!=null) {
-            return ResponseEntity.ok(result);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("{cardId}")

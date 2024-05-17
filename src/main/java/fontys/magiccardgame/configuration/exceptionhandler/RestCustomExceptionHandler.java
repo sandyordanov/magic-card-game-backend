@@ -2,6 +2,8 @@ package fontys.magiccardgame.configuration.exceptionhandler;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.CollectionUtils;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @ControllerAdvice
 @Slf4j
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class RestCustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final URI VALIDATION_ERROR_TYPE = URI.create("/validation-error");

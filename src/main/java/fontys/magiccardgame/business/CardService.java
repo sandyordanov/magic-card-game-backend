@@ -1,6 +1,7 @@
 package fontys.magiccardgame.business;
 
 import fontys.magiccardgame.business.dto.GetAllCardsResponse;
+import fontys.magiccardgame.business.exception.CardNotFoundException;
 import fontys.magiccardgame.domain.Card;
 import fontys.magiccardgame.persistence.CardRepository;
 import fontys.magiccardgame.persistence.entity.CardEntity;
@@ -27,12 +28,19 @@ public class CardService {
 
 
     public Card getById(Long id) {
-        return CardConverter.convert(cardsRepo.findById(id).orElse(null));
+        return CardConverter.convert(cardsRepo.findById(id)
+                .orElseThrow(() -> new CardNotFoundException(id)));
     }
 
 
-    public CardEntity save(CardEntity card) {
-        return cardsRepo.save(card);
+    public Card save(Card card) {
+        CardEntity entity = CardEntity.builder()
+                .name(card.getName())
+                .attackPoints(card.getAttackPoints())
+                .healthPoints(card.getHealthPoints())
+                .build();
+        CardEntity savedCard = cardsRepo.save(entity);
+        return CardConverter.convert(savedCard);
     }
 
 
@@ -41,12 +49,11 @@ public class CardService {
     }
 
 
-    public Card updateCard(Card newCard) {
-
-        CardEntity card = cardsRepo.findById(newCard.getId()).orElseThrow(() -> new IllegalArgumentException("Cannot find card with the specified id."));
-        card.setName(newCard.getName());
-        card.setAttackPoints(newCard.getAttackPoints());
-        card.setHealthPoints(newCard.getHealthPoints());
+    public Card updateCard(Card updatedCard) {
+        CardEntity card = cardsRepo.findById(updatedCard.getId()).orElseThrow(() -> new IllegalArgumentException("Cannot find card with the specified id."));
+        card.setName(updatedCard.getName());
+        card.setAttackPoints(updatedCard.getAttackPoints());
+        card.setHealthPoints(updatedCard.getHealthPoints());
         cardsRepo.save(card);
         return CardConverter.convert(card);
     }

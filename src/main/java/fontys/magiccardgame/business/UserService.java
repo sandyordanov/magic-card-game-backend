@@ -38,7 +38,7 @@ public class UserService {
 
     public Optional<User> getUser(Long id) {
         if (!requestAccessToken.hasRole(RoleEnum.ADMIN.name())) {
-            if (!requestAccessToken.getStudentId().equals(id)) {
+            if (!requestAccessToken.getUserId().equals(id)) {
                 throw new UnauthorizedDataAccessException("USER_ID_NOT_FROM_LOGGED_IN_USER");
             }
         }
@@ -63,7 +63,7 @@ public class UserService {
         return UserConverter.convert(newUserEntity);
     }
 
-    public User createAdmin(CreateUserRequest request) {
+    public void createAdmin(CreateUserRequest request) {
         //only admins can create admin accounts
         if (!requestAccessToken.hasRole(RoleEnum.ADMIN.name())) {
             throw new UnauthorizedDataAccessException("ADMIN_PERMISSION_MANDATORY");
@@ -72,12 +72,11 @@ public class UserService {
             throw new UsernameAlreadyExistsException();
         }
         UserEntity newAdminEntity = generateAdminEntity(request);
-        return UserConverter.convert(newAdminEntity);
     }
 
     public void updateUser(UpdateUserRequest request) {
         if (!requestAccessToken.hasRole(RoleEnum.ADMIN.name())) {
-            if (!requestAccessToken.getStudentId().equals(request.getId()))  {
+            if (!requestAccessToken.getUserId().equals(request.getId()))  {
                 throw new UnauthorizedDataAccessException("USER_ID_NOT_FROM_LOGGED_IN_USER");
             }
         }
@@ -91,7 +90,7 @@ public class UserService {
 
     public void deleteUser(Long id) {
         if (!requestAccessToken.hasRole(RoleEnum.ADMIN.name())) {
-            if (!requestAccessToken.getStudentId().equals(id)) {
+            if (!requestAccessToken.getUserId().equals(id)) {
                 throw new UnauthorizedDataAccessException("USER_ID_NOT_FROM_LOGGED_IN_USER");
             }
         }

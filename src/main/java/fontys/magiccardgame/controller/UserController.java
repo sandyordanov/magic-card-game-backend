@@ -1,19 +1,14 @@
 package fontys.magiccardgame.controller;
 
 import fontys.magiccardgame.business.UserService;
-import fontys.magiccardgame.business.UserTestService;
 import fontys.magiccardgame.business.dto.CreateUserRequest;
 import fontys.magiccardgame.business.dto.GetAllUsersResponse;
 import fontys.magiccardgame.business.dto.UpdateUserRequest;
-import fontys.magiccardgame.business.exception.DeckSizeLimitException;
 import fontys.magiccardgame.domain.User;
 import jakarta.annotation.security.RolesAllowed;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Optional;
 
@@ -38,10 +33,7 @@ public class UserController {
 
     @PostMapping()
     public ResponseEntity<Void> createUser(@RequestBody CreateUserRequest request) {
-//        throw new DeckSizeLimitException();
         userService.createUser(request);
-
-        //userTestService.createUser(request);
        return ResponseEntity.noContent().build();
     }
 

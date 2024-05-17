@@ -16,12 +16,12 @@ import java.util.Set;
 @Setter
 public class AccessTokenImpl implements AccessToken {
     private final String subject;
-    private final Long studentId;
+    private final Long userId;
     private final Set<String> roles;
 
-    public AccessTokenImpl(String subject, Long studentId, RoleEnum role) {
+    public AccessTokenImpl(String subject, Long userId, RoleEnum role) {
         this.subject = subject;
-        this.studentId = studentId;
+        this.userId = userId;
         this.roles = Collections.singleton(role.toString());
     }
 

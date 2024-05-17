@@ -5,6 +5,7 @@ import fontys.magiccardgame.persistence.entity.CardEntity;
 
 public final class CardConverter {
 
+    private CardConverter(){}
     public static Card convert(CardEntity cardEntity) {
         return Card.builder()
                 .id(cardEntity.getId())

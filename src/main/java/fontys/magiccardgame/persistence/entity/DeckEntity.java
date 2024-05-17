@@ -23,7 +23,7 @@ public class DeckEntity {
     @OneToOne(mappedBy = "deck")
     private PlayerEntity player;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<CardEntity> cards;
 
 

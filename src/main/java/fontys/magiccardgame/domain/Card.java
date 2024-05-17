@@ -5,7 +5,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
+@EqualsAndHashCode
 @AllArgsConstructor
 public class Card {
 

@@ -4,10 +4,10 @@ import fontys.magiccardgame.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
-
-@Data
+@Getter
 @Builder
 public class GetAllUsersResponse {
     private List<User> users;
