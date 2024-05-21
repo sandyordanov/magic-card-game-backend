@@ -5,20 +5,25 @@
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 stages:
-    - build
-    - test
-    - sonarqube
+  - build
+  - test
+  - sonarqube
 
 build:
   stage: build
   script:
     - ./gradlew assemble
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
 
 test:
   stage: test
   script:
     - ./gradlew test
-
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
 sonarqube:
   stage: sonarqube
   script:
