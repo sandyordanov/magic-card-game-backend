@@ -1,5 +1,7 @@
 package fontys.magiccardgame.business.exception;
 
+import org.springframework.web.server.ResponseStatusException;
+
 public class DeckSizeLimitException extends RuntimeException {
 
     public DeckSizeLimitException(int deckSize) {
