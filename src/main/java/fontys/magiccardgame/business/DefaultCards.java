@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class DefaultCardsService {
+public class DefaultCards {
 
     @Value("${default.card.ids}")
     private String defaultCardIds;

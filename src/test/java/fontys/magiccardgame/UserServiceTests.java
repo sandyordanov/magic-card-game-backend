@@ -1,9 +1,8 @@
 package fontys.magiccardgame;
 
-import fontys.magiccardgame.business.DefaultCardsService;
+import fontys.magiccardgame.business.DefaultCards;
 import fontys.magiccardgame.business.UserService;
 import fontys.magiccardgame.business.dto.CreateUserRequest;
-import fontys.magiccardgame.business.dto.GetAllCardsResponse;
 import fontys.magiccardgame.business.dto.GetAllUsersResponse;
 import fontys.magiccardgame.business.dto.UpdateUserRequest;
 import fontys.magiccardgame.business.exception.UsernameAlreadyExistsException;
@@ -13,7 +12,6 @@ import fontys.magiccardgame.domain.User;
 import fontys.magiccardgame.persistence.CardRepository;
 import fontys.magiccardgame.persistence.PlayerRepository;
 import fontys.magiccardgame.persistence.UserRepository;
-import fontys.magiccardgame.persistence.entity.CardEntity;
 import fontys.magiccardgame.persistence.entity.RoleEnum;
 import fontys.magiccardgame.persistence.entity.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,7 +40,7 @@ public class UserServiceTests {
     @Mock
     PlayerRepository playerRepository;
     @Mock
-    DefaultCardsService defaultCardsService;
+    DefaultCards defaultCards;
     @Mock
     private AccessToken accessToken;
 

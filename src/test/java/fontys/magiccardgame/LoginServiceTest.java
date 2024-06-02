@@ -1,29 +1,25 @@
 package fontys.magiccardgame;
 
-import fontys.magiccardgame.business.LoginUseCase;
+import fontys.magiccardgame.business.LoginService;
 import fontys.magiccardgame.business.exception.InvalidCredentialsException;
 import fontys.magiccardgame.configuration.security.token.AccessTokenEncoder;
-import fontys.magiccardgame.domain.LoginRequest;
-import fontys.magiccardgame.domain.LoginResponse;
+import fontys.magiccardgame.business.dto.LoginRequest;
 import fontys.magiccardgame.persistence.UserRepository;
 import fontys.magiccardgame.persistence.entity.UserEntity;
 import fontys.magiccardgame.persistence.entity.RoleEnum;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-class LoginUseCaseTest {
+class LoginServiceTest {
 
     @Mock
     UserRepository userRepository;
@@ -35,7 +31,7 @@ class LoginUseCaseTest {
     AccessTokenEncoder accessTokenEncoder;
 
     @InjectMocks
-    LoginUseCase loginUseCase;
+    LoginService loginService;
 
 //    @Test
 //    void testLoginSuccess() {
@@ -59,7 +55,7 @@ class LoginUseCaseTest {
     void testLoginFailUserNotFound() {
         LoginRequest loginRequest = new LoginRequest("testUser", "testPassword");
 
-        assertThrows(InvalidCredentialsException.class, () -> loginUseCase.login(loginRequest));
+        assertThrows(InvalidCredentialsException.class, () -> loginService.login(loginRequest));
     }
 
     @Test
@@ -71,6 +67,6 @@ class LoginUseCaseTest {
         userEntity.setRole(RoleEnum.PLAYER);
 
 
-        assertThrows(InvalidCredentialsException.class, () -> loginUseCase.login(loginRequest));
+        assertThrows(InvalidCredentialsException.class, () -> loginService.login(loginRequest));
     }
 }

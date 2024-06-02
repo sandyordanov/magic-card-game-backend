@@ -1,13 +1,10 @@
 package fontys.magiccardgame.controller;
 
-import fontys.magiccardgame.business.CardConverter;
 import fontys.magiccardgame.business.CardService;
 import fontys.magiccardgame.business.dto.GetAllCardsResponse;
 import fontys.magiccardgame.domain.Card;
-import fontys.magiccardgame.persistence.entity.CardEntity;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +18,6 @@ public class CardController {
     public ResponseEntity<GetAllCardsResponse> getAllCards() {
         return ResponseEntity.ok(cardService.getAllCards());
     }
-
     @GetMapping("{id}")
     public ResponseEntity<Card> getCard(@PathVariable(value = "id") final Long id) {
         var result = cardService.getById(id);
@@ -29,6 +25,15 @@ public class CardController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(result);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<GetAllCardsResponse> searchCards(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer minHealthPoints,
+            @RequestParam(required = false) Integer maxHealthPoints,
+            @RequestParam(required = false) Integer minAttackPoints,
+            @RequestParam(required = false) Integer maxAttackPoints) {
+        return ResponseEntity.ok(cardService.searchCards(name, minHealthPoints, maxHealthPoints, minAttackPoints, maxAttackPoints));
     }
 
     @PostMapping()

@@ -3,8 +3,8 @@ package fontys.magiccardgame.business;
 import fontys.magiccardgame.configuration.security.token.AccessTokenEncoder;
 import fontys.magiccardgame.configuration.security.token.impl.AccessTokenImpl;
 import fontys.magiccardgame.business.exception.InvalidCredentialsException;
-import fontys.magiccardgame.domain.LoginRequest;
-import fontys.magiccardgame.domain.LoginResponse;
+import fontys.magiccardgame.business.dto.LoginRequest;
+import fontys.magiccardgame.business.dto.LoginResponse;
 import fontys.magiccardgame.persistence.UserRepository;
 import fontys.magiccardgame.persistence.entity.RoleEnum;
 import fontys.magiccardgame.persistence.entity.UserEntity;
@@ -12,11 +12,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @AllArgsConstructor
-public class LoginUseCase {
+public class LoginService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessTokenEncoder accessTokenEncoder;

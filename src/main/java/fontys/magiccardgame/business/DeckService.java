@@ -1,81 +1,81 @@
 package fontys.magiccardgame.business;
 
-import fontys.magiccardgame.business.dto.AddCardToDeckRequest;
-import fontys.magiccardgame.business.dto.GetAllCardsResponse;
+import fontys.magiccardgame.business.converters.CardConverter;
+import fontys.magiccardgame.business.dto.GetDeckResponse;
 import fontys.magiccardgame.business.exception.CardNotFoundException;
 import fontys.magiccardgame.business.exception.DeckSizeLimitException;
 import fontys.magiccardgame.persistence.CardRepository;
 import fontys.magiccardgame.persistence.DeckRepository;
-import fontys.magiccardgame.persistence.PlayerRepository;
 import fontys.magiccardgame.persistence.entity.CardEntity;
-import fontys.magiccardgame.persistence.entity.PlayerEntity;
-import jakarta.transaction.Transactional;
+import fontys.magiccardgame.persistence.entity.DeckEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class DeckService {
-
     private DeckRepository deckRepo;
-
     private CardRepository cardRepo;
-
-    private PlayerRepository playerRepository;
-
-    static final int DECK_SIZE = 3;
+    static final int DECK_SIZE = 6;
     public int getDeckSize() {
         return DECK_SIZE;
     }
 
-    public void addCard(Long userId, Long cardId) {
-        PlayerEntity player = playerRepository.findByUser_Id(userId);
-        //  () -> new IllegalArgumentException("Cannot find player with the specified id."));
-        CardEntity card = cardRepo.findById(cardId).orElseThrow(() -> new CardNotFoundException(cardId));
+    public GetDeckResponse getDeck(Long deckId) {
+        //TODO: authorisation
+        DeckEntity deck = deckRepo.findById(deckId).orElseThrow(IllegalArgumentException::new);
 
-        if (!checkDeckSize(player)) {
+        return GetDeckResponse.builder()
+                .deck(deck.getCards().stream().map(CardConverter::convert).collect(Collectors.toList())).build();
+    }
+
+    public void addCard(Long deckId, Long cardId) {
+        //TODO: authorisation
+        CardEntity card = cardRepo.findById(cardId).orElseThrow(() -> new CardNotFoundException(cardId));
+        DeckEntity deck = deckRepo.findById(deckId).orElseThrow(IllegalArgumentException::new);
+
+        if (!checkDeckSize(deck)) {
             throw new DeckSizeLimitException(DECK_SIZE);
         }
-        if (player.getOwnedCards().stream().noneMatch(ownedCard -> ownedCard.getId().equals(card.getId()))) {
+        if (deck.getPlayer().getOwnedCards().stream().noneMatch(ownedCard -> ownedCard.getId().equals(card.getId()))) {
             throw new IllegalArgumentException("You do not have the given card in player's card collection");
         }
 
-        player.getDeck().getCards().add(card);
-        playerRepository.save(player);
+        deck.getCards().add(card);
+        deckRepo.save(deck);
     }
-    public Boolean removeCardFromDeck(Long userId, Long cardId) {
-        PlayerEntity player = playerRepository.findByUser_Id(userId);
-        Boolean result = player.getDeck().getCards().removeIf(cardEntity -> cardEntity.getId() == cardId);
-        playerRepository.save(player);
+
+    public Boolean removeCardFromDeck(Long deckId, Long cardId) {
+        //TODO: authorisation
+        DeckEntity deck = deckRepo.findById(deckId).orElseThrow(IllegalArgumentException::new);
+
+        Boolean result = deck.getCards().removeIf(cardEntity -> cardEntity.getId().equals(cardId));
+        deckRepo.save(deck);
         return result;
     }
 
-    private boolean checkDeckSize(PlayerEntity player) {
-        int cardsInDeck = player.getDeck().getCards().size();
-        return cardsInDeck <= DECK_SIZE;
+    public Map<String, Double> getAverageHealthAndAttackPointsByDeck(Long deckId) {
+        List<Object[]> result = deckRepo.findAverageHealthAndAttackPointsByDeckId(deckId);
+        Map<String, Double> averages = new HashMap<>();
+        if (!result.isEmpty()) {
+            Object[] averagesArray = result.get(0);
+            averages.put("averageHealthPoints", (Double) averagesArray[0]);
+            averages.put("averageAttackPoints", (Double) averagesArray[1]);
+        }
+        return averages;
     }
 
-    public GetAllCardsResponse getDeck(Long userId) {
-        return GetAllCardsResponse.builder()
-                .cards(playerRepository.findByUser_Id(userId)
-                        .getDeck().getCards()
-                        .stream()
-                        .map(CardConverter::convert)
-                        .collect(Collectors.toList()))
-                .build();
+    //support methods
+    private boolean checkDeckSize(DeckEntity deck) {
+        int cardsInDeck = deck.getCards().size();
+        return cardsInDeck < DECK_SIZE;
     }
 
-    @Transactional
-    public GetAllCardsResponse getOwnedCards(Long userId) {
-        return GetAllCardsResponse.builder()
-                .cards(playerRepository.findByUser_Id(userId)
-                        .getOwnedCards()
-                        .stream()
-                        .map(CardConverter::convert)
-                        .collect(Collectors.toList()))
-                .build();
-    }
+
 }
 

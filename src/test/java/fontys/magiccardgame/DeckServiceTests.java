@@ -6,6 +6,7 @@ import fontys.magiccardgame.business.exception.CardNotFoundException;
 import fontys.magiccardgame.business.exception.DeckSizeLimitException;
 import fontys.magiccardgame.domain.Card;
 import fontys.magiccardgame.persistence.CardRepository;
+import fontys.magiccardgame.persistence.DeckRepository;
 import fontys.magiccardgame.persistence.PlayerRepository;
 import fontys.magiccardgame.persistence.entity.CardEntity;
 import fontys.magiccardgame.persistence.entity.DeckEntity;
@@ -31,18 +32,18 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class DeckServiceTests {
+    @Mock
+    private CardRepository cardRepo;
+    @Mock
+    private DeckRepository deckRepo;
 
     @InjectMocks
     private DeckService deckService;
-    @Mock
-    private PlayerRepository playerRepository;
 
-    @Mock
-    private CardRepository cardRepo;
     @Test
     public void addCard_ShouldAddCardToThePlayersDeck() {
-        AddCardToDeckRequest request = AddCardToDeckRequest.builder().cardId(1L).playerId(1L).build();
         DeckEntity deck = DeckEntity.builder()
+                .id(1L)
                 .cards(new ArrayList<>())
                 .build();
         CardEntity card = CardEntity.builder()
@@ -56,39 +57,39 @@ public class DeckServiceTests {
                 .deck(deck)
                 .ownedCards(List.of(card))
                 .build();
-        when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
+        deck.setPlayer(player);
+        when(deckRepo.findById(1L)).thenReturn(Optional.of(deck));
         when(cardRepo.findById(1L)).thenReturn(Optional.of(card));
 
-        deckService.addCard(request);
-        verify(playerRepository).findById(1L);
-        verify(cardRepo).findById(1L);
-        verify(playerRepository).save(player);
+        deckService.addCard(1L,1L);
 
+        verify(deckRepo).findById(1L);
+        verify(cardRepo).findById(1L);
+        verify(deckRepo).save(deck);
         assertTrue(player.getDeck().getCards().contains(card));
     }
     @Test
     public void addCard_ShouldThrowAnException_WhenCardIdIsNotValid() {
-        AddCardToDeckRequest request = AddCardToDeckRequest.builder().cardId(1L).playerId(1L).build();
-        PlayerEntity player = PlayerEntity.builder()
-                .id(1L)
-                .deck(new DeckEntity())
-                .ownedCards(new ArrayList<>())
-                .build();
+
         when(cardRepo.findById(1L)).thenThrow(CardNotFoundException.class);
-        when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
 
         assertThrows(CardNotFoundException.class, ()->{
-            deckService.addCard(request);
+            deckService.addCard(1L,1L);
         });
     }
     @Test
-    public void addCard_ShouldThrowAnException_WhenPlayerIdIsNotValid() {
-        AddCardToDeckRequest request = AddCardToDeckRequest.builder().playerId(1L).build();
-
-        when(playerRepository.findById(1L)).thenThrow(IllegalArgumentException.class);
+    public void addCard_ShouldThrowAnException_WhenDeckIdIsNotValid() {
+        CardEntity card = CardEntity.builder()
+                .id(1L)
+                .name("Card")
+                .attackPoints(15)
+                .healthPoints(25)
+                .build();
+        when(cardRepo.findById(1L)).thenReturn(Optional.of(card));
+        when(deckRepo.findById(1L)).thenThrow(IllegalArgumentException.class);
 
         assertThrows(IllegalArgumentException.class, ()->{
-            deckService.addCard(request);
+            deckService.addCard(1L,1L);
         });
     }
     @Test
@@ -105,24 +106,20 @@ public class DeckServiceTests {
             cards.add(card);
         }
         DeckEntity deck = DeckEntity.builder()
+                .id(1L)
                 .cards(cards)
                 .build();
-        PlayerEntity player = PlayerEntity.builder()
-                .id(1L)
-                .deck(deck)
-                .ownedCards(new ArrayList<>())
-                .build();
         when(cardRepo.findById(1L)).thenReturn(Optional.of(card));
-        when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
+        when(deckRepo.findById(1L)).thenReturn(Optional.of(deck));
 
         assertThrows(DeckSizeLimitException.class, ()->{
-            deckService.addCard(request);
+            deckService.addCard(1L,1L);
         });
     }
     @Test
     public void addCard_ShouldThrowAnException_WhenPlayerDoesNotPossessTheCard() {
-        AddCardToDeckRequest request = AddCardToDeckRequest.builder().cardId(1L).playerId(1L).build();
         DeckEntity deck = DeckEntity.builder()
+                .id(1L)
                 .cards(new ArrayList<>())
                 .build();
         CardEntity card = CardEntity.builder()
@@ -136,11 +133,12 @@ public class DeckServiceTests {
                 .deck(deck)
                 .ownedCards(new ArrayList<>())
                 .build();
-        when(playerRepository.findById(1L)).thenReturn(Optional.of(player));
+        deck.setPlayer(player);
+        when(deckRepo.findById(1L)).thenReturn(Optional.of(deck));
         when(cardRepo.findById(1L)).thenReturn(Optional.of(card));
 
         assertThrows(IllegalArgumentException.class, ()->{
-            deckService.addCard(request);
+            deckService.addCard(1L,1L);
         });
     }
 }

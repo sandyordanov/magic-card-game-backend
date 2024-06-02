@@ -1,9 +1,9 @@
-package fontys.magiccardgame.business;
+package fontys.magiccardgame.business.converters;
 
 import fontys.magiccardgame.domain.User;
 import fontys.magiccardgame.persistence.entity.UserEntity;
 
-final class UserConverter {
+public class UserConverter {
 private UserConverter(){}
     public static User convert(UserEntity entity){
         return User.builder()
