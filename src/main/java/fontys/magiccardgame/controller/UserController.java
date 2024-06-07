@@ -47,7 +47,7 @@ public class UserController {
 
     @PutMapping("{id}")
     @RolesAllowed({"ADMIN", "PLAYER"})
-    public ResponseEntity<Void> updateUser(@RequestBody UpdateUserRequest request) {
+    public ResponseEntity<Void> updateUser(@PathVariable Long id,@RequestBody UpdateUserRequest request) {
         userService.updateUser(request);
         return ResponseEntity.noContent().build();
     }

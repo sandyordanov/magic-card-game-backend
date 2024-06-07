@@ -31,11 +31,11 @@ public class CardService {
         return CardConverter.convert(cardsRepo.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id)));
     }
-
     public GetAllCardsResponse searchCards(String name, Integer minHealthPoints, Integer maxHealthPoints, Integer minAttackPoints, Integer maxAttackPoints) {
         Specification<Card> spec = CardSpecification.getCardsByFilters(name, minHealthPoints, maxHealthPoints, minAttackPoints, maxAttackPoints);
         return GetAllCardsResponse.builder().cards(cardsRepo.findAll(spec)).build();
     }
+
     public Card save(Card card) {
         CardEntity entity = CardEntity.builder()
                 .name(card.getName())

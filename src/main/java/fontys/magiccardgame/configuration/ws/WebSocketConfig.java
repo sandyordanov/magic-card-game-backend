@@ -1,4 +1,4 @@
-package fontys.magiccardgame.configuration;
+package fontys.magiccardgame.configuration.ws;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

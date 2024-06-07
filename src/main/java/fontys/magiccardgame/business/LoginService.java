@@ -34,11 +34,11 @@ public class LoginService {
         return LoginResponse.builder().accessToken(accessToken).build();
     }
 
-    private boolean matchesPassword(String rawPassword, String encodedPassword) {
+    public boolean matchesPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    private String generateAccessToken(UserEntity user) {
+    public String generateAccessToken(UserEntity user) {
 
         RoleEnum role = user.getRole();
         return accessTokenEncoder.encode(

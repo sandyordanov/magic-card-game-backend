@@ -1,8 +1,6 @@
 package fontys.magiccardgame.controller;
 
 import fontys.magiccardgame.business.PlayerService;
-import fontys.magiccardgame.business.dto.GetAllCardsResponse;
-import fontys.magiccardgame.domain.Card;
 import fontys.magiccardgame.domain.Player;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;

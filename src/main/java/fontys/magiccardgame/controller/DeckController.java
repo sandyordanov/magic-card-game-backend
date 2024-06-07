@@ -1,13 +1,9 @@
 package fontys.magiccardgame.controller;
 
 import fontys.magiccardgame.business.DeckService;
-import fontys.magiccardgame.business.dto.AddCardToDeckRequest;
-import fontys.magiccardgame.business.dto.GetAllCardsResponse;
 import fontys.magiccardgame.business.dto.GetDeckResponse;
-import fontys.magiccardgame.domain.Card;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +35,8 @@ public class DeckController {
     @RolesAllowed({"PLAYER"})
     @DeleteMapping({"/{deckId}/card/{cardId}"})
     public ResponseEntity<Void> removeFromDeck(@PathVariable Long deckId,@PathVariable Long cardId) {
-        if (deckService.removeCardFromDeck(deckId,cardId)){
+        boolean cardRemoved = deckService.removeCardFromDeck(deckId, cardId);
+        if (cardRemoved) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.badRequest().build();

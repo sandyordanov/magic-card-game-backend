@@ -1,7 +1,5 @@
 package fontys.magiccardgame.domain;
 
-import fontys.magiccardgame.persistence.entity.CardEntity;
-import fontys.magiccardgame.persistence.entity.DeckEntity;
 import lombok.*;
 
 import java.util.List;
