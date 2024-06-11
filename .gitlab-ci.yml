@@ -13,6 +13,9 @@ build:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+  artifacts:
+    paths:
+      - build/libs/magic-card-game-0.0.1-SNAPSHOT.jar
 
 test:
   stage: test
@@ -45,3 +48,5 @@ docker_build:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+  dependencies:
+    - build-job
