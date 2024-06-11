@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class AccessTokenEncoderDecoderImpl implements AccessTokenEncoder, AccessTokenDecoder {
@@ -40,14 +39,14 @@ public class AccessTokenEncoderDecoderImpl implements AccessTokenEncoder, Access
             claimsMap.put("role", accessToken.getRoles());
         }
         if (accessToken.getUserId() != null) {
-            claimsMap.put("studentId", accessToken.getUserId());
+            claimsMap.put("userId", accessToken.getUserId());
         }
 
         Instant now = Instant.now();
         return Jwts.builder()
                 .setSubject(accessToken.getSubject())
                 .setIssuedAt(Date.from(now))
-                .setExpiration(Date.from(now.plus(30, ChronoUnit.MINUTES)))
+                .setExpiration(Date.from(now.plus(120, ChronoUnit.MINUTES)))
                 .addClaims(claimsMap)
                 .signWith(key)
                 .compact();
@@ -62,7 +61,7 @@ public class AccessTokenEncoderDecoderImpl implements AccessTokenEncoder, Access
 
             List<String> roleList = claims.get("role", List.class);
             RoleEnum roles = RoleEnum.valueOf(roleList.get(0));
-            Long studentId = claims.get("studentId", Long.class);
+            Long studentId = claims.get("userId", Long.class);
 
             return new AccessTokenImpl(claims.getSubject(), studentId, roles);
         } catch (JwtException e) {

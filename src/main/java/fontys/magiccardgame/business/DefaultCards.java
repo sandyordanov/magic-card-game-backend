@@ -5,10 +5,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
-public class DefaultCardsService {
+public class DefaultCards {
 
     @Value("${default.card.ids}")
     private String defaultCardIds;
@@ -16,7 +15,7 @@ public class DefaultCardsService {
     public List<Long> getDefaultCardIds() {
         return Arrays.stream(defaultCardIds.split(","))
                 .map(Long::parseLong)
-                .collect(Collectors.toList());
+                .toList();
     }
 }
 

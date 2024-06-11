@@ -1,26 +1,52 @@
-# Disable the Gradle daemon for Continuous Integration servers as correctness
-# is usually a priority over speed in CI environments. Using a fresh
-# runtime for each build is more reliable since the runtime is completely
-# isolated from any previous builds.asd
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 stages:
-    - build
-    - test
-    - sonarqube
+  - build
+  - test
+  - sonarqube
+  - docker_build
 
 build:
   stage: build
   script:
     - ./gradlew assemble
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+  artifacts:
+    paths:
+      - build/libs/magic-card-game-0.0.1-SNAPSHOT.jar
 
 test:
   stage: test
   script:
     - ./gradlew test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
 
 sonarqube:
   stage: sonarqube
   script:
     - ./gradlew sonar
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
 
+docker_build:
+  stage: docker_build
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+  script:
+    - docker build -t snado/mcg:mcg-1.0 .
+    - docker push snado/mcg:mcg-1.0
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+  dependencies:
+    - build

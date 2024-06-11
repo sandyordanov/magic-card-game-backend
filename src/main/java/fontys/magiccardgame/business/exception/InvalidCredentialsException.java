@@ -5,6 +5,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class InvalidCredentialsException extends ResponseStatusException {
     public InvalidCredentialsException() {
-        super(HttpStatus.BAD_REQUEST, "INVALID_CREDENTIALS");
+        super(HttpStatus.BAD_REQUEST, "Credentials did not match");
     }
 }

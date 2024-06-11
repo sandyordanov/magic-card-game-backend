@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 @SpringJUnitConfig
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class CardServiceTests {
+class CardServiceTests {
     @InjectMocks
     private CardService cardService;
 
@@ -33,7 +33,7 @@ public class CardServiceTests {
     private CardRepository cardsRepo;
 
     @Test
-    public void getAllCards_shouldReturn_allCardsInTheCollection() {
+    void getAllCards_shouldReturn_allCardsInTheCollection() {
         CardEntity card1 = new CardEntity();
         CardEntity card2 = new CardEntity();
         when(cardsRepo.findAll()).thenReturn(Arrays.asList(card1, card2));
@@ -45,7 +45,7 @@ public class CardServiceTests {
     }
 
     @Test
-    public void getById_shouldReturnAPresentCard() {
+    void getById_shouldReturnAPresentCard() {
         CardEntity card = new CardEntity();
         when(cardsRepo.findById(1L)).thenReturn(Optional.of(card));
 
@@ -56,7 +56,7 @@ public class CardServiceTests {
     }
 
     @Test
-    public void getById_shouldThrowCardNotFoundExceptionWhenCardIsNotPresent() {
+    void getById_shouldThrowCardNotFoundExceptionWhenCardIsNotPresent() {
         when(cardsRepo.findById(2L)).thenThrow(new CardNotFoundException(2L));
 
         assertThrows(CardNotFoundException.class, () -> {
@@ -66,7 +66,7 @@ public class CardServiceTests {
     }
 
     @Test
-    public void saveCard_ShouldSaveCardSuccessfully() {
+    void saveCard_ShouldSaveCardSuccessfully() {
         Card card = Card.builder()
                 .id(1L)
                 .name("default")
@@ -88,7 +88,7 @@ public class CardServiceTests {
     }
 
     @Test
-    public void updateCard_ShouldReturnCorrectlyUpdatedCard() {
+    void updateCard_ShouldReturnCorrectlyUpdatedCard() {
         // Prepare existing and updated card data
         CardEntity existingCard = CardEntity.builder()
                 .id(1L)
@@ -127,7 +127,7 @@ public class CardServiceTests {
     }
 
     @Test
-    public void updateCard_ShouldThrowIllegalArgumentException_WhenCardIdIsNotFound() {
+    void updateCard_ShouldThrowIllegalArgumentException_WhenCardIdIsNotFound() {
         Card updatedCard = Card.builder()
                 .id(2L)
                 .name("Updated Card")
@@ -140,7 +140,7 @@ public class CardServiceTests {
     }
 
     @Test
-    public void testDeleteById() {
+    void testDeleteById() {
         cardService.deleteById(1L);
 
         verify(cardsRepo, times(1)).deleteById(1L);

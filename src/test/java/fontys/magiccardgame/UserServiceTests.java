@@ -1,9 +1,9 @@
 package fontys.magiccardgame;
 
-import fontys.magiccardgame.business.DefaultCardsService;
+import fontys.magiccardgame.business.DefaultCards;
+import fontys.magiccardgame.business.PlayerService;
 import fontys.magiccardgame.business.UserService;
 import fontys.magiccardgame.business.dto.CreateUserRequest;
-import fontys.magiccardgame.business.dto.GetAllCardsResponse;
 import fontys.magiccardgame.business.dto.GetAllUsersResponse;
 import fontys.magiccardgame.business.dto.UpdateUserRequest;
 import fontys.magiccardgame.business.exception.UsernameAlreadyExistsException;
@@ -13,7 +13,6 @@ import fontys.magiccardgame.domain.User;
 import fontys.magiccardgame.persistence.CardRepository;
 import fontys.magiccardgame.persistence.PlayerRepository;
 import fontys.magiccardgame.persistence.UserRepository;
-import fontys.magiccardgame.persistence.entity.CardEntity;
 import fontys.magiccardgame.persistence.entity.RoleEnum;
 import fontys.magiccardgame.persistence.entity.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,22 +29,22 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.internal.configuration.GlobalConfiguration.validate;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTests {
+ class UserServiceTests {
 
     @Mock
     UserRepository userRepository;
     @Mock
-    CardRepository cardRepository;
-    @Mock
-    PlayerRepository playerRepository;
-    @Mock
-    DefaultCardsService defaultCardsService;
-    @Mock
     private AccessToken accessToken;
-
+    @Mock
+    private DefaultCards defaultCards;
+    @Mock
+    private CardRepository cardRepository;
+    @Mock
+    private PlayerRepository playerRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
     @InjectMocks
@@ -54,7 +52,7 @@ public class UserServiceTests {
 
 
     @Test
-    public void getUser_ShouldReturnUserWith_WhenIdIsValid() {
+     void getUser_ShouldReturnUserWith_WhenIdIsValid() {
         UserEntity userEntity = new UserEntity();
         userEntity.setId(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
@@ -66,17 +64,27 @@ public class UserServiceTests {
         assertEquals(1L, user.get().getId());
         verify(userRepository, times(1)).findById(1L);
     }
-
     @Test
-    public void getUser_ShouldThrowExceptionWhenUnauthorised() {
+     void getUser_ShouldReturnUserWith_WhenAskedByAdmin() {
         UserEntity userEntity = new UserEntity();
         userEntity.setId(1L);
-        assertThrows(UnauthorizedDataAccessException.class, () -> {
-            userService.getUser(1L);
-        });
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(true);
+
+        Optional<User> user = userService.getUser(1L);
+
+        assertTrue(user.isPresent());
+        assertEquals(1L, user.get().getId());
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
+     void getUser_ShouldThrowExceptionWhenUnauthorised() {
+        when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(false);
+        assertThrows(UnauthorizedDataAccessException.class, () -> userService.getUser(1L));
     }
     @Test
-    public void getUser_ShouldThrowExceptionWhenUnauthenticated() {
+     void getUser_ShouldThrowExceptionWhenUnauthenticated() {
         when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(false);
         when(accessToken.getUserId()).thenReturn(2L);
         assertThrows(UnauthorizedDataAccessException.class, () -> {
@@ -84,7 +92,7 @@ public class UserServiceTests {
         });
     }
     @Test
-    public void getAllUsers_ShouldReturnListOfUsersWhenRoleIsAdmin() {
+     void getAllUsers_ShouldReturnListOfUsersWhenRoleIsAdmin() {
         UserEntity user1 = new UserEntity();
         UserEntity user2 = new UserEntity();
         when(userRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
@@ -97,14 +105,13 @@ public class UserServiceTests {
     }
 
     @Test
-    public void getAllUsers_ShouldThrowExceptionWhenUnauthorised() {
-        assertThrows(UnauthorizedDataAccessException.class, () -> {
-            userService.getUser(1L);
-        });
+     void getAllUsers_ShouldThrowExceptionWhenUnauthorised() {
+        when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(false);
+        assertThrows(UnauthorizedDataAccessException.class, () -> userService.getAllUsers());
     }
 
     @Test
-    public void createUser_ShouldCreateUserWhenDataIsValid() {
+     void createUser_ShouldCreateUserWhenDataIsValid() {
         CreateUserRequest request = CreateUserRequest.builder()
                 .username("test")
                 .password("password")
@@ -127,7 +134,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void createUser_ShouldThrowAnExceptionWhenUsernameAlreadyExists() {
+     void createUser_ShouldThrowAnExceptionWhenUsernameAlreadyExists() {
         CreateUserRequest request = new CreateUserRequest();
         request.setUsername("test");
         request.setPassword("password");
@@ -139,9 +146,52 @@ public class UserServiceTests {
 
         assertThrows(UsernameAlreadyExistsException.class, () -> userService.createUser(request));
     }
-
     @Test
-    public void updateUser_ShouldUpdateUserWithValidData(){
+     void createAdmin_ShouldCreateAdmin_WhenDataIsValid() {
+        CreateUserRequest request = CreateUserRequest.builder()
+                .username("test")
+                .password("password")
+                .build();
+        UserEntity userEntity = UserEntity.builder()
+                .id(1L)
+                .username(request.getUsername())
+                .password("encodedPassword")
+                .role(RoleEnum.ADMIN)
+                .build();
+        when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(true);
+        when(userRepository.findByUsername("test")).thenReturn(null);
+        when(userRepository.save(any(UserEntity.class))).thenReturn(userEntity);
+
+
+        userService.createAdmin(request);
+
+        verify(userRepository,times(1)).save(any(UserEntity.class));
+    }
+    @Test
+     void createAdmin_ShouldThrowAnExceptionWhenUsernameAlreadyExists() {
+        CreateUserRequest request = new CreateUserRequest();
+        request.setUsername("test");
+        request.setPassword("password");
+
+        UserEntity existingUser = new UserEntity();
+        existingUser.setUsername("test");
+        when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(true);
+        when(userRepository.findByUsername("test")).thenReturn(existingUser);
+
+        assertThrows(UsernameAlreadyExistsException.class, () -> userService.createAdmin(request));
+    }
+    @Test
+     void createAdmin_ShouldThrowAnException_WhenNotAuthorised() {
+        CreateUserRequest request = new CreateUserRequest();
+        request.setUsername("test");
+        request.setPassword("password");
+
+        when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(false);
+
+        assertThrows(UnauthorizedDataAccessException.class, () -> userService.createAdmin(request));
+    }
+    @Test
+     void updateUser_ShouldUpdateUserWithValidData(){
         UpdateUserRequest request = new UpdateUserRequest();
         request.setId(1L);
         request.setPassword("newPassword");
@@ -158,33 +208,47 @@ public class UserServiceTests {
         verify(userRepository, times(1)).save(any(UserEntity.class));
     }
     @Test
-    public void updateUser_ShouldThrowExceptionWhenUnauthorised() {
-        assertThrows(UnauthorizedDataAccessException.class, () -> {
-            userService.updateUser(new UpdateUserRequest());
-        });
+     void updateUser_ShouldThrowExceptionWhenUnauthorised() {
+       UpdateUserRequest request = new UpdateUserRequest();
+       request.setId(1L);
+       request.setPassword("newPassword");
+        assertThrows(UnauthorizedDataAccessException.class, () -> userService.updateUser(request));
     }
     @Test
-    public void updateUser_ShouldThrowExceptionWhenUnauthenticated() {
+     void updateUser_ShouldThrowExceptionWhenUnauthenticated() {
+       UpdateUserRequest request = new UpdateUserRequest();
+       request.setId(1L);
+       request.setPassword("newPassword");
         when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(false);
         when(accessToken.getUserId()).thenReturn(2L);
-        assertThrows(UnauthorizedDataAccessException.class, () -> {
-            userService.updateUser(new UpdateUserRequest());
-        });
+        assertThrows(UnauthorizedDataAccessException.class, () -> userService.updateUser(request));
     }
     @Test
-    public void updateUser_ShouldThrowException_WhenUserIdIsInvalid() {
+     void updateUser_ShouldThrowException_WhenUserIdIsInvalid() {
         UpdateUserRequest request = new UpdateUserRequest();
         request.setId(1L);
         when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(true);
         when(userRepository.findById(1L)).thenThrow( new EntityNotFoundException());
-        assertThrows(EntityNotFoundException.class, () -> {
-            userService.updateUser(request);
-        });
+        assertThrows(EntityNotFoundException.class, () -> userService.updateUser(request));
     }
 
     @Test
-    public void testDeleteUser() {
+     void testDeleteUser() {
         when(accessToken.getUserId()).thenReturn(1L);
+
+        userService.deleteUser(1L);
+
+        verify(userRepository, times(1)).deleteById(1L);
+    }
+    @Test
+     void deleteUser_ShouldThrowException_WhenNotAuthorisedUser() {
+        when(accessToken.getUserId()).thenReturn(2L);
+
+        assertThrows(UnauthorizedDataAccessException.class, () -> userService.deleteUser(1L));
+    }
+    @Test
+     void deleteUser_ShouldDeleteUser_WhenUserIsAnAdmin() {
+        when(accessToken.hasRole(RoleEnum.ADMIN.name())).thenReturn(true);
 
         userService.deleteUser(1L);
 

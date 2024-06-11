@@ -1,4 +1,4 @@
-package fontys.magiccardgame.domain;
+package fontys.magiccardgame.business.dto;
 
 import lombok.*;
 

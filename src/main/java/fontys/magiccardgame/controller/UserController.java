@@ -6,6 +6,7 @@ import fontys.magiccardgame.business.dto.GetAllUsersResponse;
 import fontys.magiccardgame.business.dto.UpdateUserRequest;
 import fontys.magiccardgame.domain.User;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +33,9 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<Void> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<Void> createUser(@Valid @RequestBody CreateUserRequest request) {
         userService.createUser(request);
-       return ResponseEntity.noContent().build();
+       return ResponseEntity.ok().build();
     }
 
     @PostMapping("/admin")
@@ -46,7 +47,7 @@ public class UserController {
 
     @PutMapping("{id}")
     @RolesAllowed({"ADMIN", "PLAYER"})
-    public ResponseEntity<Void> updateUser(@RequestBody UpdateUserRequest request) {
+    public ResponseEntity<Void> updateUser(@PathVariable Long id,@RequestBody UpdateUserRequest request) {
         userService.updateUser(request);
         return ResponseEntity.noContent().build();
     }

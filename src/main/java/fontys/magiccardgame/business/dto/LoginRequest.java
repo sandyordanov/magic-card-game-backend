@@ -1,4 +1,4 @@
-package fontys.magiccardgame.domain;
+package fontys.magiccardgame.business.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -8,8 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
-    @NotBlank
+    @NotBlank(message = "Username cannot be blank")
     private String username;
-    @NotBlank
+
+    @NotBlank(message = "Password cannot be blank")
     private String password;
 }

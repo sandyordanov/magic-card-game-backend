@@ -1,4 +1,4 @@
-package fontys.magiccardgame.business;
+package fontys.magiccardgame.business.converters;
 
 import fontys.magiccardgame.domain.Card;
 import fontys.magiccardgame.persistence.entity.CardEntity;

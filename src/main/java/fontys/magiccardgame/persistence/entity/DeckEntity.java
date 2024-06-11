@@ -18,7 +18,7 @@ public class DeckEntity {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @OneToOne(mappedBy = "deck")
     private PlayerEntity player;
