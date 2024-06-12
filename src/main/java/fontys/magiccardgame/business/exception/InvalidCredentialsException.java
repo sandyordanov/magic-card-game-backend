@@ -3,8 +3,8 @@ package fontys.magiccardgame.business.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class InvalidCredentialsException extends ResponseStatusException {
+public class InvalidCredentialsException extends RuntimeException {
     public InvalidCredentialsException() {
-        super(HttpStatus.BAD_REQUEST, "Credentials did not match");
+        super("Credentials did not match");
     }
 }
