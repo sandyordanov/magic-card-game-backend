@@ -1,10 +1,7 @@
 package fontys.magiccardgame.business.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
-public class UsernameAlreadyExistsException extends ResponseStatusException {
+public class UsernameAlreadyExistsException extends RuntimeException {
     public UsernameAlreadyExistsException(){
-        super(HttpStatus.BAD_REQUEST, "USERNAME_ALREADY_EXISTS");
+        super( "Username already exists");
     }
 }
