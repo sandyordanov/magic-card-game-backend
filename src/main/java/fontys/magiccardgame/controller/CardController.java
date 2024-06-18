@@ -52,7 +52,7 @@ public class CardController {
 
     @PutMapping("{id}")
     @RolesAllowed({"ADMIN"})
-    public ResponseEntity<Card> updateCard(@PathVariable("id") Long id, @RequestBody Card updatedCard) {
+    public ResponseEntity<Card> updateCard(@PathVariable("id") Long id,@Valid @RequestBody Card updatedCard) {
         updatedCard = Card.builder()
                 .id(id)
                 .name(updatedCard.getName())

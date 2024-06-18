@@ -1,10 +1,12 @@
 package fontys.magiccardgame.controller;
-import lombok.Getter;
-import lombok.Setter;
+
+import fontys.magiccardgame.business.dto.GameStartMessage;
+import fontys.magiccardgame.domain.*;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import fontys.magiccardgame.service.GameSessionService;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,10 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Controller
 public class MatchmakingController {
     private final SimpMessagingTemplate messagingTemplate;
+    private final GameSessionService gameSessionService;
+    private final ConcurrentHashMap<Long, GameSession> activeGames = new ConcurrentHashMap<>();
     private Set<String> onlineUsers = ConcurrentHashMap.newKeySet();
-
-    public MatchmakingController(SimpMessagingTemplate messagingTemplate) {
+    private static final String TOPIC_GAME = "/topic/game";
+    public MatchmakingController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService) {
         this.messagingTemplate = messagingTemplate;
+        this.gameSessionService = gameSessionService;
     }
 
     @MessageMapping("/status")
@@ -33,20 +38,50 @@ public class MatchmakingController {
     @MessageMapping("/invite/{username}")
     @SendTo("/topic/invitations/{username}")
     public void sendInvitation(InvitationMessage message) {
+        if (message.getStatus().equals("Accepted")) {
+            GameSession gameSession = gameSessionService.createGameSession(message);
+            message.setGameId(gameSession.getId());
+            messagingTemplate.convertAndSend("/topic/invitations/" + message.getSender(), message);
+            activeGames.put(gameSession.getId(), gameSession);
+
+        }
         messagingTemplate.convertAndSend("/topic/invitations/" + message.getReceiver(), message);
     }
-}
-@Getter
-@Setter
-class UserStatusMessage {
-    private String username;
-    private boolean online;
-}
 
-@Getter
-@Setter
-class InvitationMessage {
-    private String sender;
-    private String receiver;
-    private String status;
+    @MessageMapping("/game/{gameId}")
+    @SendTo("/topic/game/{gameId}")
+    public GameSession receiveSession(GameStartMessage message) {
+        messagingTemplate.convertAndSend(TOPIC_GAME + message.getGameId(), activeGames.get(message.getGameId()));
+        invitePlayersToPlay(activeGames.get(message.getGameId()));
+        return activeGames.get(message.getGameId());
+    }
+
+    @MessageMapping("/play-card")
+    public void playCard(PlayCardRequest request) {
+        GameSession gameSession = activeGames.get(request.getGameId());
+        if (gameSession != null) {
+            try {
+                gameSession.addPlayCardRequest(request);
+            } catch (IllegalStateException e) {
+                // Handle case where player tries to play more than one card
+                messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), e.getMessage());
+                return;
+            }
+
+            if (gameSession.isGameOver()) {
+                messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), gameSession);
+                activeGames.remove(gameSession.getId());
+            } else {
+                invitePlayersToPlay(gameSession);
+            }
+
+            messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), gameSession);
+        }
+    }
+
+    private void invitePlayersToPlay(GameSession gameSession) {
+        String message = "It's your turn to play a card.";
+        messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId() + "/player/" + gameSession.getPlayer1().getId(), message);
+        messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId() + "/player/" + gameSession.getPlayer2().getId(), message);
+    }
 }

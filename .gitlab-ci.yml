@@ -1,5 +1,6 @@
 variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
 stages:
   - build
   - test
@@ -16,6 +17,7 @@ build:
   artifacts:
     paths:
       - build/libs/magic-card-game-0.0.1-SNAPSHOT.jar
+      - application-deployment.properties
 
 test:
   stage: test
@@ -40,10 +42,14 @@ docker_build:
     - docker:dind
   variables:
     DOCKER_DRIVER: overlay2
+    DB_USERNAME: root
+    DB_PASSWORD: 1234
+    JWT_SECRET: E91E158E4C6656F68B1B5D1C316766DE98D2AD6EF3BFB44F78E9CFCDF5
   before_script:
     - docker login -u $REGISTRY_USER -p $REGISTRY_PASS
   script:
-    - docker build -t snado/mcg:mcg-1.0 .
+    - cp application-deployment.properties build/libs/
+    - docker build -t snado/mcg:mcg-1.0 -f Dockerfile build/libs/
     - docker push snado/mcg:mcg-1.0
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'

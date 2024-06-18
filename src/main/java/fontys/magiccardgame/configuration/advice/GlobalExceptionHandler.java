@@ -76,4 +76,12 @@ public class GlobalExceptionHandler {
         response.put(ERROR, ex.getMessage());
         return response;
     }
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public Map<String, String> handleRuntimeException(RuntimeException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put(ERROR, ex.getMessage());
+        return response;
+    }
 }
