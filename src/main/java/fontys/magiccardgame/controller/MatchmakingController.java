@@ -17,7 +17,8 @@ public class MatchmakingController {
     private final GameSessionService gameSessionService;
     private final ConcurrentHashMap<Long, GameSession> activeGames = new ConcurrentHashMap<>();
     private Set<String> onlineUsers = ConcurrentHashMap.newKeySet();
-    private static final String TOPIC_GAME = "/topic/game";
+    private static final String TOPIC_GAME = "/topic/game/";
+
     public MatchmakingController(SimpMessagingTemplate messagingTemplate, GameSessionService gameSessionService) {
         this.messagingTemplate = messagingTemplate;
         this.gameSessionService = gameSessionService;
@@ -52,7 +53,6 @@ public class MatchmakingController {
     @SendTo("/topic/game/{gameId}")
     public GameSession receiveSession(GameStartMessage message) {
         messagingTemplate.convertAndSend(TOPIC_GAME + message.getGameId(), activeGames.get(message.getGameId()));
-        invitePlayersToPlay(activeGames.get(message.getGameId()));
         return activeGames.get(message.getGameId());
     }
 
@@ -65,23 +65,33 @@ public class MatchmakingController {
             } catch (IllegalStateException e) {
                 // Handle case where player tries to play more than one card
                 messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), e.getMessage());
-                return;
             }
 
             if (gameSession.isGameOver()) {
                 messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), gameSession);
                 activeGames.remove(gameSession.getId());
             } else {
-                invitePlayersToPlay(gameSession);
+                if (gameSession.getPlayersWhoPlayed().size()<2){
+                    invitePlayersToPlay(gameSession);
+                }
+
+            }
+            if (gameSession.isTurnFinished()) {
+                messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), gameSession);
+                gameSession.getPendingRequests().clear();
+                gameSession.getPlayersWhoPlayed().clear();
             }
 
-            messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), gameSession);
         }
+
     }
 
     private void invitePlayersToPlay(GameSession gameSession) {
-        String message = "It's your turn to play a card.";
-        messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId() + "/player/" + gameSession.getPlayer1().getId(), message);
-        messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId() + "/player/" + gameSession.getPlayer2().getId(), message);
+        String message = "Opponent has played a card.";
+        if (gameSession.getPlayersWhoPlayed().contains(gameSession.getPlayer1().getUserId())) {
+            messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId() + "/player/" + gameSession.getPlayer2().getUserId(), message);
+        } else {
+            messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId() + "/player/" + gameSession.getPlayer1().getUserId(), message);
+        }
     }
 }

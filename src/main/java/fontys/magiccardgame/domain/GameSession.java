@@ -14,6 +14,7 @@ public class GameSession {
     private Player player1;
     private Player player2;
     private boolean isGameOver = false;
+    private boolean turnFinished = false;
     private Player winner;
 
     // Store the card requests for each player
@@ -42,20 +43,20 @@ public class GameSession {
     }
 
     public synchronized void addPlayCardRequest(PlayCardRequest request) {
-        if (playersWhoPlayed.contains(request.getPlayerId())) {
+        if (playersWhoPlayed.contains(request.getUserId())) {
             throw new IllegalStateException("Player has already played a card this turn.");
         }
-        pendingRequests.put(request.getPlayerId(), request);
-        playersWhoPlayed.add(request.getPlayerId());
-
+        pendingRequests.put(request.getUserId(), request);
+        playersWhoPlayed.add(request.getUserId());
+        turnFinished = false;
         if (pendingRequests.size() == 2) {
             executeTurn();
         }
     }
 
     private void executeTurn() {
-        PlayCardRequest request1 = pendingRequests.get(player1.getId());
-        PlayCardRequest request2 = pendingRequests.get(player2.getId());
+        PlayCardRequest request1 = pendingRequests.get(player1.getUserId());
+        PlayCardRequest request2 = pendingRequests.get(player2.getUserId());
 
         // Extract the cards being played
         Card card1 = request1.getCard();
@@ -72,19 +73,46 @@ public class GameSession {
         if (card2RemainingHp < 0) {
             player2.setHp(player2.getHp() + card2RemainingHp); // card2RemainingHp is negative
         }
+        // Remove played cards from players' hands
+        player1.getHand().remove(card1);
+        player2.getHand().remove(card2);
 
-        // Check for game over
-        if (checkGameOver()) {
-            isGameOver = true;
-            winner = player1.getHp() > 0 ? player1 : player2;
+        // Draw new cards from deckStack
+        if (!player1.getDeckStack().isEmpty()) {
+            Card newCard1 = player1.getDeckStack().pop();
+            player1.getHand().add(newCard1);
         }
 
-        // Clear the pending requests and reset the turn status
-        pendingRequests.clear();
-        playersWhoPlayed.clear();
+        if (!player2.getDeckStack().isEmpty()) {
+            Card newCard2 = player2.getDeckStack().pop();
+            player2.getHand().add(newCard2);
+        }
+        if (checkGameOver()) {
+            isGameOver = true;
+            if (player1.getHp()<=0 && player2.getHp()<=0){
+                winner = null;
+            }
+            if (player1.getHp()>0 || player2.getHand().isEmpty()){
+                winner = player1;
+            }
+            if (player2.getHp()> 0 || player1.getHand().isEmpty()){
+                winner = player2;
+            }
+            turnFinished = true;
+            return;
+        }
+
+        turnFinished = true;
+
     }
 
     private boolean checkGameOver() {
-        return player1.getHp() <= 0 || player2.getHp() <= 0;
+        if (player1.getHp()<=0 || player2.getHp()<=0){
+            return true;
+        }
+        if(player1.getHand().isEmpty() || player2.getHand().isEmpty()){
+            return true;
+        }
+        return false;
     }
 }

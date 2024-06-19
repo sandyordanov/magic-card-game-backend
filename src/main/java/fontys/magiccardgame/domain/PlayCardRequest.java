@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class PlayCardRequest {
     private long gameId;
-    private long playerId;
+    private long userId;
     private Card card;
 }
