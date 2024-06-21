@@ -24,7 +24,6 @@ public class AuthenticationRequestFilter extends OncePerRequestFilter {
 
     private static final String SPRING_SECURITY_ROLE_PREFIX = "ROLE_";
 
-    //@Autowired
     private AccessTokenDecoder accessTokenDecoder;
 
     @Override
