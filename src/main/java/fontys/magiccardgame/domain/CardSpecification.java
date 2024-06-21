@@ -1,5 +1,6 @@
 package fontys.magiccardgame.domain;
 
+import fontys.magiccardgame.persistence.entity.CardEntity;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class CardSpecification {
 
-    public static Specification<Card> getCardsByFilters(String name, Integer minHealthPoints, Integer maxHealthPoints, Integer minAttackPoints, Integer maxAttackPoints) {
+    public static Specification<CardEntity> getCardsByFilters(String name, Integer minHealthPoints, Integer maxHealthPoints, Integer minAttackPoints, Integer maxAttackPoints) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 

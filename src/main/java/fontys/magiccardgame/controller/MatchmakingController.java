@@ -1,5 +1,6 @@
 package fontys.magiccardgame.controller;
 
+import fontys.magiccardgame.business.GameSession;
 import fontys.magiccardgame.business.dto.GameStartMessage;
 import fontys.magiccardgame.domain.*;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -53,7 +54,12 @@ public class MatchmakingController {
     @SendTo("/topic/game/{gameId}")
     public GameSession receiveSession(GameStartMessage message) {
         messagingTemplate.convertAndSend(TOPIC_GAME + message.getGameId(), activeGames.get(message.getGameId()));
-        return activeGames.get(message.getGameId());
+        GameSession session = activeGames.get(message.getGameId());
+        if (session.getPlayer1().getUserId() == message.getUserId() || session.getPlayer2().getUserId() == message.getUserId()) {
+            session.setIsTurnFinishedFalse();
+            return session;
+        }
+        return null;
     }
 
     @MessageMapping("/play-card")
@@ -71,7 +77,7 @@ public class MatchmakingController {
                 messagingTemplate.convertAndSend(TOPIC_GAME + gameSession.getId(), gameSession);
                 activeGames.remove(gameSession.getId());
             } else {
-                if (gameSession.getPlayersWhoPlayed().size()<2){
+                if (gameSession.getPlayersWhoPlayed().size() < 2) {
                     invitePlayersToPlay(gameSession);
                 }
 

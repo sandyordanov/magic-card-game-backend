@@ -1,7 +1,7 @@
 package fontys.magiccardgame.service;
 
 import fontys.magiccardgame.business.converters.PlayerConverter;
-import fontys.magiccardgame.domain.GameSession;
+import fontys.magiccardgame.business.GameSession;
 import fontys.magiccardgame.domain.InvitationMessage;
 import fontys.magiccardgame.domain.Player;
 import fontys.magiccardgame.persistence.PlayerRepository;

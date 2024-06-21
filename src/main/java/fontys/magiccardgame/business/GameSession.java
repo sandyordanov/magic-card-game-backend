@@ -1,5 +1,8 @@
-package fontys.magiccardgame.domain;
+package fontys.magiccardgame.business;
 
+import fontys.magiccardgame.domain.Card;
+import fontys.magiccardgame.domain.PlayCardRequest;
+import fontys.magiccardgame.domain.Player;
 import lombok.Getter;
 
 import java.util.*;
@@ -53,7 +56,7 @@ public class GameSession {
         }
     }
 
-    private void executeTurn() {
+    public void executeTurn() {
         PlayCardRequest request1 = pendingRequests.get(player1.getUserId());
         PlayCardRequest request2 = pendingRequests.get(player2.getUserId());
 
@@ -100,7 +103,9 @@ public class GameSession {
         turnFinished = true;
 
     }
-
+    public void setIsTurnFinishedFalse(){
+        turnFinished = false;
+    }
     private boolean checkGameOver() {
         if (player1.getHp()<=0 || player2.getHp()<=0){
             return true;

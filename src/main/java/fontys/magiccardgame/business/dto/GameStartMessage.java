@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameStartMessage {
     private long gameId;
+    private long userId;
 }
